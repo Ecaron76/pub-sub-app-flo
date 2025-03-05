@@ -24,7 +24,7 @@ env:
 on:
   push:
     branches:
-      - develop
+      - maalsi24
   pull_request:
     branches:
       - develop
@@ -57,7 +57,7 @@ jobs:
         with:
           dotnet-version: ${{env.DOTNET_VERSION}}
 
-      - name: Run tests #TEST
+      - name: Run tests
         working-directory: ${{env.PROJECT_FOLDER}}
         run: dotnet test --configuration Release
 
