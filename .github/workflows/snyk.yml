@@ -1,0 +1,49 @@
+name: Snyk Security Scan
+
+on:
+  push:
+    branches:
+      - maalsi24
+  pull_request:
+    branches:
+      - maalsi24
+
+jobs:
+  snyk-code:
+    name: Scan du Code et des Dépendances
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Installer Snyk
+        run: npm install -g snyk
+
+      - name: Authentification Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Scanner les dépendances (Maven, npm, etc.)
+        run: snyk test --severity-threshold=medium
+
+      - name: Scanner le code source (SAST)
+        run: snyk code test
+
+  snyk-container:
+    name: Scan des Conteneurs (Docker)
+    runs-on: ubuntu-latest
+    needs: snyk-code
+    if: always()  # Exécute même si la première tâche échoue
+
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      - name: Installer Snyk
+        run: npm install -g snyk
+
+      - name: Authentification Snyk
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Scanner l'image Docker (changer le nom de l’image)
+        run: snyk container test mon-image:latest
